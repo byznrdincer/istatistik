@@ -1,20 +1,19 @@
 import java.util.*;
 
+import java.util.*;
+
 public class FrekansSerisi {
     public static void main(String[] args) {
-        // Scanner ile kullanıcıdan veri kümesini alalım
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Veri kümesini girin (boşlukla ayırarak girin): ");
         String input = scanner.nextLine();
 
-        // Girilen veriyi bir diziye dönüştürmek
         String[] veriler = input.split(" ");
 
-        // Frekansları saymak için bir HashMap kullanıyoruz
-        Map<String, Integer> frekansMap = new HashMap<>();
+        // Frekansları saymak için TreeMap kullandık, otomatik olarak sıralar
+        Map<String, Integer> frekansMap = new TreeMap<>();
 
-        // Verileri gezerek her değerin frekansını sayalım
         for (String veri : veriler) {
             frekansMap.put(veri, frekansMap.getOrDefault(veri, 0) + 1);
         }

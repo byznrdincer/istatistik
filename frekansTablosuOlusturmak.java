@@ -1,87 +1,92 @@
 import java.util.Scanner;
 import java.util.Arrays;
 
+import java.util.Arrays;
+import java.util.Scanner;
+
 public class frekansTablosuOlusturmak {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // Kullanıcıdan veri setinin boyutunu alalım
-        System.out.print("Veri kümesinin boyutunu girin: ");
+        System.out.print("Kaç adet değer gireceksiniz: ");
         int n = scanner.nextInt();
 
-        // Kullanıcıdan veri setini alalım
-        int[] data = new int[n];
-        System.out.println("Veri kümesini girin: ");
+        double[] veri = new double[n];
         for (int i = 0; i < n; i++) {
-            data[i] = scanner.nextInt();
+            System.out.print((i + 1) + ". değeri giriniz: ");
+            veri[i] = scanner.nextDouble();
         }
 
-        // Veriyi sıralayalım
-        Arrays.sort(data);
+        Arrays.sort(veri); // Verileri küçükten büyüğe sırala
 
-        // En küçük ve en büyük değeri bulalım
-        int S = data[0];  // En küçük değer
-        int L = data[n - 1];  // En büyük değer
+        int k = (int) Math.ceil(Math.sqrt(n)); // Sınıf sayısı
+        double r = veri[n - 1] - veri[0];      // Ranj
+        double snc = Math.ceil(r / k);         // Sınıf genişliği
 
-        // Sınıf sayısını hesapla (√n)
-        int k = (int) Math.ceil(Math.sqrt(n));
-        System.out.println("Sınıf Sayısı (k): " + k);
+        double[][] sinifLimitleri = new double[k][2];
+        double[][] sinifSinirlari = new double[k][2];
+        double[] frekanslar = new double[k];
+        double[] eklenikFrekanslar = new double[k];
+        double[] ortaNoktalar = new double[k];
 
-        // Sınıf genişliğini hesapla
-        int R = L - S;
-        int h = (int) Math.ceil((double) R / k);
-        System.out.println("Sınıf Genişliği (h): " + h);
-
-        // Sınıf limitlerini ve sınıf sınırlarını belirleyelim
-        int lowerLimit = S;
-        int upperLimit = lowerLimit + h - 1;
-
-        // Frekansları tutmak için bir dizi
-        int[] frequency = new int[k];
-        int totalFrequency = 0;
-
-        // Sınıf frekanslarını hesapla
+        // Sınıf limitleri
+        System.out.println("Sınıf Limitleri:");
         for (int i = 0; i < k; i++) {
-            int count = 0;
-            for (int value : data) {
-                if (value >= lowerLimit && value <= upperLimit) {
-                    count++;
+            sinifLimitleri[i][0] = veri[0] + snc * i;
+            sinifLimitleri[i][1] = veri[0] + snc * (i + 1);
+            System.out.printf("%.2f\t%.2f\n", sinifLimitleri[i][0], sinifLimitleri[i][1]);
+        }
+
+        // Sınıf sınırları
+        System.out.println("\nSınıf Sınırları:");
+        for (int i = 0; i < k; i++) {
+            sinifSinirlari[i][0] = sinifLimitleri[i][0] - 0.5;
+            sinifSinirlari[i][1] = sinifLimitleri[i][1] + 0.5;
+            System.out.printf("%.2f\t%.2f\n", sinifSinirlari[i][0], sinifSinirlari[i][1]);
+        }
+
+        // Frekanslar
+        System.out.println("\nSınıf Frekansları:");
+        for (int i = 0; i < k; i++) {
+            double alt = sinifSinirlari[i][0];
+            double ust = sinifSinirlari[i][1];
+            for (double v : veri) {
+                if (v >= alt && v < ust) {
+                    frekanslar[i]++;
                 }
             }
-            frequency[i] = count;
-            totalFrequency += count;
-            lowerLimit = upperLimit + 1;
-            upperLimit = lowerLimit + h - 1;
+            System.out.printf("%.0f\n", frekanslar[i]);
         }
 
-        // Sınıf limitleri ve sınıf sınırları
-        lowerLimit = S;
-        upperLimit = lowerLimit + h - 1;
-
-        System.out.println("\nFrekans Tablosu:");
-        System.out.println("Sınıf No | Sınıf Limitleri | Sınıf Sınırları | Frekans | Eklenik Frekans | Oransal Frekans | Oransal Eklenik Frekans");
-
-        double cumulativeFrequency = 0;
-        double cumulativeRelativeFrequency = 0;
+        // Eklenik frekans
+        System.out.println("\nEklenik Frekans:");
+        double toplam = 0;
         for (int i = 0; i < k; i++) {
-            double classBoundaryLower = lowerLimit - 0.5;
-            double classBoundaryUpper = upperLimit + 0.5;
-            double classMidPoint = (lowerLimit + upperLimit) / 2.0;
+            toplam += frekanslar[i];
+            eklenikFrekanslar[i] = toplam;
+            System.out.printf("%.0f\n", eklenikFrekanslar[i]);
+        }
 
-            cumulativeFrequency += frequency[i];
-            double relativeFrequency = (double) frequency[i] / n;
-            cumulativeRelativeFrequency += relativeFrequency;
+        // Oransal frekans
+        System.out.println("\nOransal Frekans:");
+        for (int i = 0; i < k; i++) {
+            System.out.printf("%.2f\n", frekanslar[i] / n);
+        }
 
-            System.out.printf("%-9d | [%3d - %3d]        | [%.1f - %.1f]       | %-7d | %-14.0f | %-15.4f | %-19.4f\n",
-                    i + 1, lowerLimit, upperLimit, classBoundaryLower, classBoundaryUpper, frequency[i],
-                    cumulativeFrequency, relativeFrequency, cumulativeRelativeFrequency);
+        // Oransal eklenik frekans
+        System.out.println("\nOransal Eklenik Frekans:");
+        for (int i = 0; i < k; i++) {
+            System.out.printf("%.2f\n", eklenikFrekanslar[i] / n);
+        }
 
-            lowerLimit = upperLimit + 1;
-            upperLimit = lowerLimit + h - 1;
+        // Orta noktalar
+        System.out.println("\nSınıf Orta Noktaları:");
+        for (int i = 0; i < k; i++) {
+            ortaNoktalar[i] = (sinifLimitleri[i][0] + sinifLimitleri[i][1]) / 2;
+            System.out.printf("%.2f\n", ortaNoktalar[i]);
         }
 
         scanner.close();
     }
 }
-

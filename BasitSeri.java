@@ -1,8 +1,6 @@
 import java.util.Scanner;
 
-import java.util.Scanner;
-
-public class BasitSıralamaAlg {
+public class BasitSeri {
     public static void main(String[] args) {
         // Scanner nesnesi ile kullanıcıdan veri alıyoruz
         Scanner scanner = new Scanner(System.in);
